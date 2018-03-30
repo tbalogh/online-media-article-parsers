@@ -187,9 +187,6 @@ def validate_arguments(args):
     if not args.portal in ACCEPTED_PORTALS:
         raise ValueError("portal must be one of the following: " + str(ACCEPTED_PORTALS))
 
-    if not os.path.isdir(args.input_root):
-        raise ValueError("input_root must be an existing directory!")
-
 
 def parse_arguments():
     parser = argparse.ArgumentParser()
@@ -198,13 +195,12 @@ def parse_arguments():
     required = parser.add_argument_group('required arguments')
     required.add_argument("-p", "--portal", required=True,
                           help="One of the following portals: index|origo|nnn|nynyny|ps")
-    required.add_argument("-i", "--input_root", required=True, help="Directory contains html files to the given portal")
-    required.add_argument("-o", "--output_root", required=True, help="Directory where to save the model files")
+    required.add_argument("-t", "--html_text", required=True, help="Html page as text. Html content of an article of the given portal.")
 
     args = parser.parse_args()
     validate_arguments(args)
 
-    return args.portal, args.input_root, args.output_root
+    return args.html_text, args.portal
 
 
 def generate_id(article):
@@ -228,31 +224,6 @@ def get_output_path(output_root, file_name):
     return output_root + os.path.sep + output_name
 
 
-def execute(portal, input_root, output_root):
-    article_paths = list(file_utils.files_ends_with(input_root, ".html"))
-    progress = progress_indicator.ProgressIndicator(portal + " parser", int(len(article_paths)))
-    log = logger.Logger(output_root.rstrip(os.path.sep) + os.path.sep + "execution.log")
-    log.clean()
-    progress.start()
-    for article_path in article_paths:
-        try:
-            article_html = html.fromstring((file_utils.read(article_path)))
-            article_model = create_article_model(portal, article_html, xpath_map_factory[portal]())
-            output_path = get_output_path(output_root, article_model['id'])
-            file_utils.save_json(article_model, output_path)
-            log.info("PROCESSED", article_path)
-            progress.next()
-        except DateParseError as ex:
-            log.error("FAILED", article_path)
-            progress.next()
-            continue
-        except IOError as e:
-            log.error("FAILED", article_path)
-            progress.next()
-            continue
-    progress.finish()
-
-
 def validate_config(config):
     assert (config['portal'] in ACCEPTED_PORTALS)
 
@@ -266,8 +237,8 @@ def process(text, config):
     article_model = create_article_model(portal, article_html, xpath_map_factory[portal]())
     return str(article_model)
 
-
 if __name__ == '__main__':
-#    (portal, input_root, output_root) = parse_arguments()
-#    execute(portal, input_root, output_root)
-    print('Hello world') 
+    text, portal = parse_arguments()
+    config = dict()
+    config['portal'] = portal
+    print(process(text, config))

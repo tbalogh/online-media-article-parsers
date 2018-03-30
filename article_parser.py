@@ -50,21 +50,9 @@ def unique(xpath_result):
 
 def from_origo_date_format(xpath_result):
     # YYYY-MM-DDTHH:MM   ->    YYYY-MM-DDTHH:MM:SS+HH:MM
-    if len(xpath_result) is 1: # and xpath_result[0]:
+    if len(xpath_result) is 1:
         return xpath_result[0] + ":00+00:00"
     return ""
-    # raise OrigoDateParseException("origo date found 0 times or more than once in xpath_result: " + str(xpath_result))
-
-
-# origo_date_regex = re.compile("\s*.*strModDate = '([\d]{4})\.\s+([\d]{2})\.\s+([\d]{2})\.,?\s+([\d]{2})\:([\d]{2})")
-# def from_origo_date_format(xpath_result):
-#     # '2011. 07. 01., 23:24'   ->    YYYY-MM-DDTHH:MM:SS+HH:MM
-#     if len(xpath_result) == 1:
-#         matches = origo_date_regex.match(xpath_result[0])
-#         if not matches:
-#             raise DateParseException("no matching origo date found in xpathresult: " + str(xpath_result[0]) + " " + str(matches))
-#         return "{}-{}-{}T{}:{}:00+00:00".format(matches.group(1), matches.group(2), matches.group(3), matches.group(4), matches.group(5))
-#     raise DateParseException("origo date must exist 0 or multiple times" + str(xpath_result))
 
 def double_digit(might_double_digit_str):
     if len(might_double_digit_str) is 1:

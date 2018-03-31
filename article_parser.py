@@ -235,7 +235,7 @@ def process(text, config):
     article_html = html.fromstring(text)
     portal = config['portal']
     article_model = create_article_model(portal, article_html, xpath_map_factory[portal]())
-    return str(article_model)
+    return json.dumps(article_model, ensure_ascii=False, sort_keys=True, indent=4)
 
 if __name__ == '__main__':
     text, portal = parse_arguments()

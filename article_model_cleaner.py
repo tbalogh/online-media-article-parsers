@@ -1,21 +1,8 @@
-import argparse, os
+import argparse, os, json
 from functools import reduce
 import importlib.util
 
-file_util_spec = importlib.util.spec_from_file_location("file utils", os.environ['THESIS_DIR'] + "/util/file_utils.py")
-file_util = importlib.util.module_from_spec(file_util_spec)
-file_util_spec.loader.exec_module(file_util)
-
-progress_indicator_spec = importlib.util.spec_from_file_location("progress indicator", os.environ['THESIS_DIR'] + "/util/progress_indicator.py")
-progress_indicator = importlib.util.module_from_spec(progress_indicator_spec)
-progress_indicator_spec.loader.exec_module(progress_indicator)
-
-logger_spec = importlib.util.spec_from_file_location("logger", os.environ['THESIS_DIR'] + "/util/logger.py")
-logger = importlib.util.module_from_spec(logger_spec)
-logger_spec.loader.exec_module(logger)
-
-CLEANED_MODEL_EXT = ".cleaned_model"
-MODEL_EXT = ".model"
+import file_utils
 
 class CleanError(Exception):
     def __init__(self, message):
@@ -28,10 +15,6 @@ def create_missing_data_map():
         'title': 0,     'description': 0,       'category': 0
     }
 
-def get_output_path(output_root, article_path):
-    article_name = os.path.basename(article_path)
-    output_name = article_name.replace(MODEL_EXT, CLEANED_MODEL_EXT)
-    return output_root + os.path.sep + output_name
 
 def date_from_url(url, portal):
     if portal == 'index' and url:       
@@ -58,42 +41,27 @@ def clean_article_model(article_model):
 
     return article_model
 
-def validate_arguments(args):
-    assert(os.path.isdir(args.model_root))
 
 def parse_arguments():
     parser = argparse.ArgumentParser()
     parser._action_groups.pop()
 
     required = parser.add_argument_group('required arguments')
-    required.add_argument("-m", "--model_root", required=True, help="Directory contains model files")
-    required.add_argument("-o", "--output_root", required=True, help="Directory where to saved cleaned model files")
+    required.add_argument("-a", "--article_content", required=True, help="The content of article")
 
     args = parser.parse_args()
-    validate_arguments(args)
 
-    return (args.model_root, args.output_root)
+    return args.article_content
 
-def execute(model_root, output_root):
-    model_paths = list(file_util.files_ends_with(model_root, ".model"))
-    progress = progress_indicator.ProgressIndicator("Model cleaner in {}".format(model_root), int(len(model_paths)))
-    log = logger.Logger(output_root.rstrip(os.path.sep) + os.path.sep + "execution.log")
-    log.clean()
-    progress.start()
-    for model_path in model_paths:
-        article_model = file_util.read_json(model_path)
-        try:
-            cleaned_article_model = clean_article_model(article_model)
-            file_util.save_json(cleaned_article_model, get_output_path(output_root, model_path))
-            log.info("PROCESSED", model_path)
-            progress.next()
-        except CleanError as ex:
-            # print(str(ex))
-            log.error("FAILED", model_path  )
-            progress.next()
-            continue
-    progress.finish()
+
+def process(article_model_str):
+    try:
+        model = json.loads(article_model_str)
+        cleaned_model = clean_article_model(model)
+        print(json.dumps(cleaned_model, ensure_ascii=False, sort_keys=True, indent=4, separators=(',', ': ')))
+    except IOError as ex:
+        pass
 
 if __name__ == '__main__':
-    (model_root, output_root) = parse_arguments()
-    execute(model_root, output_root)
+    article_model_str = parse_arguments()
+    process(article_model_str)

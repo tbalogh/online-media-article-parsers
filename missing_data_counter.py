@@ -1,37 +1,32 @@
-import argparse, os, importlib.util
-
-spec = importlib.util.spec_from_file_location("util", os.environ['THESIS_DIR'] + "/util/file_utils.py")
-file_util = importlib.util.module_from_spec(spec)
-spec.loader.exec_module(file_util)
-
-MODEL_EXTENSION = ".cleaned_model"
-
-def create_missing_data_map():
-    return {    
-        'content': 0,   'published_time': 0,    'url': 0,   'author': 0,
-        'title': 0,     'description': 0,       'category': 0
-    }
+import argparse, os
+import file_utils.file_utils as file_utils
 
 def validate_arguments(args):
-    assert(os.path.isdir(args.model_root))
+    for model_file in args.model_files:
+        assert(os.path.isfile(model_file))
+
 
 def parse_arguments():
     parser = argparse.ArgumentParser()
     parser._action_groups.pop()
 
     required = parser.add_argument_group('required arguments')
-    required.add_argument("-m", "--model_root", required=True, help="Directory contains model files")
+    required.add_argument("-m", "--model_files", required=True, help="List of article model files", nargs='+')
 
     args = parser.parse_args()
     validate_arguments(args)
     
-    return args.model_root
+    return args.model_files
 
-def execute(model_root):
-    model_files = list(file_util.files_ends_with(model_root, MODEL_EXTENSION))
-    missing_data_map = create_missing_data_map()
+
+def execute(model_files):
+    missing_data_map = {    
+        'content': 0,   'published_time': 0,    'url': 0,   'author': 0,
+        'title': 0,     'description': 0,       'category': 0
+    }
+
     for model_path in model_files:
-        article_model = file_util.read_json(model_path)
+        article_model = file_utils.read_json(model_path)
         for (key, value) in missing_data_map.items():
             if not article_model[key]:
                 missing_data_map[key] += 1
@@ -43,5 +38,6 @@ def execute(model_root):
     print(percentage_map)
 
 if __name__ == '__main__':
-    model_root = parse_arguments()
-    execute(model_root)
+    model_files = parse_arguments()
+    execute(model_files)
+

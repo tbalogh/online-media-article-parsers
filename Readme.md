@@ -46,6 +46,21 @@ This script "cleans" the article models so it fix invalid data such as missing v
 
 `usage: article_model_cleaner.py [-h] -a ARTICLE_CONTENT`
 
-An example usage:
+example usage:
 
 `python article_model_cleaner.py -a "$(< example_article_model.txt )"`
+
+# Count missing data
+
+This script counts the percentage of missing data by keys so it helps validate the "cleaness level" of your data.
+
+`usage: missing_data_counter.py [-h] -m MODEL_FILES [MODEL_FILES ...]`
+
+example usage:
+
+`python missing_data_counter.py -m $(ls . | grep txt | tr '\n' ' ')`
+
+example result:
+
+`{'content': 0, 'published_time': 0, 'url': 0, 'author': 13, 'title': 0, 'description': 4, 'category': 0}`
+

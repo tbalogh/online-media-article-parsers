@@ -2,8 +2,6 @@ import argparse, os, json
 from functools import reduce
 import importlib.util
 
-import file_utils
-
 class CleanError(Exception):
     def __init__(self, message):
         super(CleanError, self).__init__(message)

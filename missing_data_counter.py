@@ -1,5 +1,6 @@
-import argparse, os
+import argparse, os, json
 import file_utils.file_utils as file_utils
+
 
 def validate_arguments(args):
     for model_file in args.model_files:
@@ -15,12 +16,12 @@ def parse_arguments():
 
     args = parser.parse_args()
     validate_arguments(args)
-    
+
     return args.model_files
 
 
 def execute(model_files):
-    missing_data_map = {    
+    missing_data_map = {
         'content': 0,   'published_time': 0,    'url': 0,   'author': 0,
         'title': 0,     'description': 0,       'category': 0
     }
@@ -33,9 +34,10 @@ def execute(model_files):
 
     percentage_map = {}
     for (key, value) in missing_data_map.items():
-        percentage_map[key] = int((value / (len(model_files) + 1 )) * 100)
+        percentage_map[key] = int((value / (len(model_files) + 1)) * 100)
     print("# of files: " + str(len(model_files)))
     print(percentage_map)
+
 
 if __name__ == '__main__':
     model_files = parse_arguments()

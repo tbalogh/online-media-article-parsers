@@ -1,15 +1,10 @@
-import sys, os, codecs, json, re, argparse, hashlib
+import json, re, argparse, hashlib
 from os.path import isfile, join
 from lxml import html
 from functools import reduce
 
-import file_utils 
-import executor_logger as logger
-import progress_indicator
-
 SHA1 = hashlib.sha1()
 LOG_PATH = None
-MODEL_EXTENSION = ".model"
 
 
 class DateParseError(Exception):
@@ -164,7 +159,7 @@ xpath_map_factory['origo'] = origo_xpath_map
 
 def ps_xpath_map():
     data_xpath_map = dict()
-    data_xpath_map['content'] = ('//div[@class="theiaPostSlider_slides"]//text()', " ", no_transformation)
+    data_xpath_map['content'] = ('//*[@id="content-area"]/p/text() | //*[@id="content-area"]/h5/text()', " ", no_transformation)
     data_xpath_map['published_time'] = (
     '/html/head/meta[@property="article:published_time"]/@content', "", no_transformation)
     data_xpath_map['url'] = ('/html/head/meta[@property="og:url"]/@content', "", no_transformation)
@@ -215,13 +210,6 @@ def create_article_model(portal, article_html, xpath_map):
         article[key] = evaluate_xpath(article_html, xpath_expr, separator, transformator)
     article['id'] = generate_id(article)
     return article
-
-
-def get_output_path(output_root, file_name):
-    if not file_name:
-        raise ValueError('file_name should be not empty: ' + file_name)
-    output_name = file_name + MODEL_EXTENSION
-    return output_root + os.path.sep + output_name
 
 
 def validate_config(config):

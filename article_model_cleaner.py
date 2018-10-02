@@ -56,9 +56,9 @@ def process(article_model_str):
     try:
         model = json.loads(article_model_str)
         cleaned_model = clean_article_model(model)
-        print(json.dumps(cleaned_model, ensure_ascii=False, sort_keys=True, indent=4, separators=(',', ': ')))
+        return json.dumps(cleaned_model, ensure_ascii=False, sort_keys=True, indent=4, separators=(',', ': '))
     except IOError as ex:
-        pass
+         raise Exception(ex)
 
 if __name__ == '__main__':
     article_model_str = parse_arguments()

@@ -91,11 +91,13 @@ def index_xpath_map():
     " ", no_transformation)
     data_xpath_map['published_time'] = (
     '/html/head/meta[@property="article:published_time"]/@content', "", no_transformation)
+    # data_xpath_map['published_time'] = (
+    # '/html/head/meta[@property="article:published_time"]/@content', "", no_transformation)
     data_xpath_map['url'] = ('/html/head/meta[@property="og:url"]/@content', "", no_transformation)
 
-    data_xpath_map['author'] = ('/html/head/meta[@name="author"]/@content', "", no_transformation)
+    data_xpath_map['author'] = ('//div[@class="szerzo kep-nelkul"]/div[@class="kovetes nem-kovetheto"]/a/text() | //div[@class="szerzo"]/div[@class="kovetes"]/a/text()', "", no_transformation)
     data_xpath_map['title'] = ('/html/head/meta[@property="og:title"]/@content', "", no_transformation)
-    data_xpath_map['description'] = ('/html/head/meta[@property="og:description"]/@content', "", no_transformation)
+    data_xpath_map['description'] = ('/html/head/meta[@name="description"]/@content', "", no_transformation)
     data_xpath_map['category'] = ('/html/head/meta[@name="news_keywords"]/@content', "", no_transformation)
     data_xpath_map['tags'] = ('/html/head/meta[@name="keywords"]/@content', ";", no_transformation)
     return data_xpath_map
@@ -159,7 +161,7 @@ xpath_map_factory['origo'] = origo_xpath_map
 
 def ps_xpath_map():
     data_xpath_map = dict()
-    data_xpath_map['content'] = ('//*[@id="content-area"]/p/text() | //*[@id="content-area"]/h5/text()', " ", no_transformation)
+    data_xpath_map['content'] = ('//*[@itemprop="articleBody"]//*/p/text()', " ", no_transformation)
     data_xpath_map['published_time'] = (
     '/html/head/meta[@property="article:published_time"]/@content', "", no_transformation)
     data_xpath_map['url'] = ('/html/head/meta[@property="og:url"]/@content', "", no_transformation)

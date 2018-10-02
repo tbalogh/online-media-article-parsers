@@ -40,6 +40,19 @@ Every article independently it's source shares the same structure, like:
 "
 ```
 
+## Samples
+
+You can test the samples with the following (replace \<portal\>):
+
+```find samples/<portal> -exec sh -c 'python article_parser.py -p <portal> -t "$(<$1)"' -- {} \; ```
+
+Eg.:
+
+```find samples/index -exec sh -c 'python article_parser.py -p index -t "$(<$1)"' -- {} \; ```
+
+
+
+
 # Article model cleaner
 
 This script "cleans" the article models so it fix invalid data such as missing values. One example is the missing publication time that sometimes can be extracted from the url.

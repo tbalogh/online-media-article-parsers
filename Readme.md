@@ -8,7 +8,9 @@ Use [pipenv](https://pipenv.readthedocs.io/en/latest/) for installing dependenci
 
 ## Usage
 
-`article_parser.py [-h] -p PORTAL -t HTML_TEXT`
+`article_parser.py [-h] -p PORTAL -t HTML_TEXT -c [True|False]`
+
+The -c flag is use the article\_model\_cleaner (see below in Readme) to clean the model in the parsing step.
 
 Accepted values for PORTAL: [index, origo, nnn, nynyny, ps]. Find the portal url for those values in the table below:
 
@@ -22,28 +24,28 @@ Accepted values for PORTAL: [index, origo, nnn, nynyny, ps]. Find the portal url
 
 example usage:
 
-`python article_parser.py -p index -t "$(< /path/to/index/article.html)"`
+```python
+python article_parser.py -p index -t "$(< /path/to/index/article.html)"
+```
 
 ## Articel model
 
 Every article shares the same structure (independently from its source), like:
 
-```
-"
-{
-    "id": ...,
-    "portal": ...,
-    "url": ...,
-    "published_time": ...,
-    "title": ...,
-    "content": ...,
-    "description": ..., #optional
-    "author": ..., #optional
-    "category": ..., #optional
-    "tags": ..., #optional
-    "description": ..., #optional
-}
-"
+```json
+"{
+    "id": "",
+    "portal": "",
+    "url": "",
+    "published_time": "",
+    "title": "",
+    "content": "",
+    "description": "", #optional
+    "author": [], #optional
+    "category": "...", #optional
+    "tags": [], #optional
+    "description": "..." #optional
+}"
 ```
 
 ## Samples
@@ -52,11 +54,14 @@ You can try out the parser with samples (replace \<portal\>):
 
 usage:
 
-```find samples/<portal> -exec sh -c 'python article_parser.py -p <portal> -t "$(<$1)"' -- {} \; ```
+```bash
+find samples/<portal> -exec sh -c 'python article_parser.py -p <portal> -t "$(<$1)"' -- {} \; 
+```
 
 exapmle:
 
-```find samples/index -exec sh -c 'python article_parser.py -p index -t "$(<$1)"' -- {} \; ```
+```bash
+find samples/index -exec sh -c 'python article_parser.py -p index -t "$(<$1)"' -- {} \; ```
 
 
 
@@ -70,7 +75,9 @@ usage:
 
 example:
 
-`python article_model_cleaner.py -a "$(< path/to/an/article.model )"`
+```bash
+python article_model_cleaner.py -a "$(< path/to/an/article.model )"
+```
 
 # Count missing data
 
@@ -82,7 +89,9 @@ usage:
 
 example:
 
-`python missing_data_counter.py -m $(ls . | grep txt | tr '\n' ' ')`
+```bash
+python missing_data_counter.py -m $(ls . | grep txt | tr '\n' ' ')
+```
 
 example result:
 

@@ -56,7 +56,7 @@ def process(article_model_str):
     try:
         model = json.loads(article_model_str)
         cleaned_model = clean_article_model(model)
-        return json.dumps(cleaned_model, ensure_ascii=False, sort_keys=True, indent=4, separators=(',', ': '))
+        return json.dumps(cleaned_model, ensure_ascii=False, sort_keys=True, separators=(',', ': '))
     except IOError as ex:
          raise Exception(ex)
 

@@ -2,10 +2,15 @@ import json, re, argparse, hashlib
 from os.path import isfile, join
 from lxml import html
 from functools import reduce
+import hashlib
+from article_model_cleaner import process as clean_model
 
-SHA1 = hashlib.sha1()
 LOG_PATH = None
 
+def hashOf(text):
+    m = hashlib.sha1()
+    m.update(text.encode("utf-8"))
+    return m.digest().decode("utf-8", "ignore")
 
 class DateParseError(Exception):
     def __init__(self, message):
@@ -184,6 +189,13 @@ def validate_arguments(args):
     if not args.portal in ACCEPTED_PORTALS:
         raise ValueError("portal must be one of the following: " + str(ACCEPTED_PORTALS))
 
+def str2bool(v):
+    if v.lower() in ('yes', 'true', 't', 'y', '1'):
+        return True
+    elif v.lower() in ('no', 'false', 'f', 'n', '0'):
+        return False
+    else:
+        raise argparse.ArgumentTypeError('Boolean value expected.')
 
 def parse_arguments():
     parser = argparse.ArgumentParser()
@@ -193,16 +205,17 @@ def parse_arguments():
     required.add_argument("-p", "--portal", required=True,
                           help="One of the following portals: index|origo|nnn|nynyny|ps")
     required.add_argument("-t", "--html_text", required=True, help="Html page as text. Html content of an article of the given portal.")
+    required.add_argument("-c", "--clean", type=str2bool, nargs='?',
+                        const=True, default="True", help="The flag that the article should be cleaned by the article_model_cleaner.py. More info about article_model_cleaner in Readme.md.")
 
     args = parser.parse_args()
     validate_arguments(args)
 
-    return args.html_text, args.portal
+    return args.html_text, args.portal, args.clean
 
 
 def generate_id(article):
-    SHA1.update(article['url'].encode('utf-8'))
-    return SHA1.hexdigest()
+    return hashOf(article['url'])
 
 
 def create_article_model(portal, article_html, xpath_map):
@@ -225,10 +238,14 @@ def process(text, config):
     article_html = html.fromstring(text)
     portal = config['portal']
     article_model = create_article_model(portal, article_html, xpath_map_factory[portal]())
-    return json.dumps(article_model, ensure_ascii=False, sort_keys=True, indent=4)
+    if "clean" in config.keys() and config['clean']:
+        return clean_model(json.dumps(article_model, ensure_ascii=False))
+    else:
+        return json.dumps(article_model, ensure_ascii=False, sort_keys=True)
 
 if __name__ == '__main__':
-    text, portal = parse_arguments()
+    text, portal, clean = parse_arguments()
     config = dict()
     config['portal'] = portal
+    config['clean'] = bool(clean)
     print(process(text, config))

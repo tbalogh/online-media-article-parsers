@@ -154,7 +154,7 @@ def origo_xpath_map():
     data_xpath_map['published_time'] = ('//span[@id="article-date"]/@datetime', "", from_origo_date_format)
     data_xpath_map['url'] = ('/html/head/meta[@property="og:url"]/@content', "", no_transformation)
 
-    data_xpath_map['author'] = ('//span[@class="article-author"]/text()', "", no_transformation)
+    data_xpath_map['author'] = ('//span[@class="article-author"]/text()', ";", unique)
     data_xpath_map['title'] = ('/html/head/meta[@name="title"]/@content', "", no_transformation)
     data_xpath_map['description'] = ('/html/head/meta[@name="description"]/@content', "", no_transformation)
     data_xpath_map['category'] = ('//*[@id="breadcrumb"]/a/text()', "", no_transformation)

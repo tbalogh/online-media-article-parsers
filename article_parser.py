@@ -10,7 +10,7 @@ LOG_PATH = None
 def hashOf(text):
     m = hashlib.sha1()
     m.update(text.encode("utf-8"))
-    return m.digest().decode("utf-8", "ignore")
+    return m.hexdigest()
 
 class DateParseError(Exception):
     def __init__(self, message):

@@ -166,10 +166,10 @@ xpath_map_factory['origo'] = origo_xpath_map
 
 def ps_xpath_map():
     data_xpath_map = dict()
-    data_xpath_map['content'] = ('//*[@itemprop="articleBody"]//*/p/text()', " ", no_transformation)
+    data_xpath_map['content'] = ('//*[@itemprop="articleBody"]//p//text()', " ", no_transformation)
     data_xpath_map['published_time'] = (
     '/html/head/meta[@property="article:published_time"]/@content', "", no_transformation)
-    data_xpath_map['url'] = ('/html/head/meta[@property="og:url"]/@content', "", no_transformation)
+    data_xpath_map['url'] = ('/html/head/meta[@property="og:url"]/@content', "", unique)
 
     data_xpath_map['author'] = ('//span[@class="vcard author"]/span/a/text()', ";", unique)
     data_xpath_map['title'] = ('/html/head/title/text()', "", no_transformation)
@@ -229,7 +229,6 @@ def create_article_model(portal, article_html, xpath_map):
 
 def validate_config(config):
     assert (config['portal'] in ACCEPTED_PORTALS)
-
 
 def process(text, config):
     if type(config) is str:

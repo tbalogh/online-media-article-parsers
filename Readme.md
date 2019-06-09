@@ -61,7 +61,8 @@ find samples/<portal> -exec sh -c 'python article_parser.py -p <portal> -t "$(<$
 exapmle:
 
 ```bash
-find samples/index -exec sh -c 'python article_parser.py -p index -t "$(<$1)"' -- {} \; ```
+find samples/index -exec sh -c 'python article_parser.py -p index -t "$(<$1)"' -- {} \; 
+```
 
 
 
